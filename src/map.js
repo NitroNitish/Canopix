@@ -64,30 +64,19 @@ function renderForestZones() {
     });
 }
 
-/**
- * Create a targeting-reticle SVG marker icon
- */
-function createReticleIcon(isSelected = false, severity = 'HIGH') {
-    const color = isSelected ? '#C0B87A' : (severity === 'HIGH' ? '#cc4444' : severity === 'MEDIUM' ? '#c87a3a' : '#C0B87A');
-    const size = isSelected ? 42 : 30;
-    const r = isSelected ? 14 : 10;
-    const gap = isSelected ? 16 : 12;
-    const lineLen = isSelected ? 10 : 7;
-    const center = size / 2;
-    const dotR = isSelected ? 4 : 3;
+// Create a targeting-reticle SVG marker icon
+function createReticleIcon(isSelected = false, severity = 'HIGH', type = 'Active Fire') {
+    const color = type === 'Illegal Mining' ? '#ffc107' :
+        type === 'Deforestation' ? '#f39c12' : '#e05555';
+    const size = isSelected ? 48 : 32;
+    const opacity = isSelected ? 1 : 0.8;
 
     const svg = `
-    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="${center}" cy="${center}" r="${r}" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.9"/>
-      <circle cx="${center}" cy="${center}" r="${r + 8}" fill="none" stroke="${color}" stroke-width="0.8" opacity="0.3">
-        <animate attributeName="r" values="${r + 4};${r + 16}" dur="2.5s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.35;0" dur="2.5s" repeatCount="indefinite"/>
-      </circle>
-      <line x1="${center}" y1="${center - gap}" x2="${center}" y2="${center - gap + lineLen}" stroke="${color}" stroke-width="0.8" opacity="0.6"/>
-      <line x1="${center}" y1="${center + gap - lineLen}" x2="${center}" y2="${center + gap}" stroke="${color}" stroke-width="0.8" opacity="0.6"/>
-      <line x1="${center - gap}" y1="${center}" x2="${center - gap + lineLen}" y2="${center}" stroke="${color}" stroke-width="0.8" opacity="0.6"/>
-      <line x1="${center + gap - lineLen}" y1="${center}" x2="${center + gap}" y2="${center}" stroke="${color}" stroke-width="0.8" opacity="0.6"/>
-      <circle cx="${center}" cy="${center}" r="${dotR}" fill="${color}"/>
+    <svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: ${opacity}">
+      <circle cx="32" cy="32" r="28" stroke="${color}" stroke-width="2" stroke-dasharray="4 4" class="reticle-spin" />
+      <circle cx="32" cy="32" r="12" stroke="${color}" stroke-width="3" />
+      <path d="M32 8V20M32 44V56M8 32H20M44 32H56" stroke="${color}" stroke-width="3" stroke-linecap="round"/>
+      ${isSelected ? `<circle cx="32" cy="32" r="20" stroke="${color}" stroke-width="1" class="pulse-ring" />` : ''}
     </svg>
   `;
 

@@ -22,7 +22,13 @@
     --muted: #a3c4a3;
     --muted-dim: #8aad8a;
     --alert-red: #e05555;
-    --alert-orange: #e0993a;
+    /* Forest Fire */
+    --alert-orange: #f39c12;
+    /* Deforestation */
+    --alert-gold: #ffc107;
+    /* Illegal Mining */
+    --alert-purple: #9b59b6;
+    /* Urban Encroachment (Future) */
     --surface: #264626;
     --surface-hover: #2d5230;
     --font-display: 'Playfair Display', Georgia, serif;
@@ -572,7 +578,16 @@ body {
 }
 
 .sensor-dot.active {
-    background: #5cb85c;
+    background: #4CAF50;
+    box-shadow: 0 0 8px #4CAF50;
+}
+
+.sensor-dot.sensor-mining {
+    background: var(--alert-gold);
+}
+
+.sensor-dot.sensor-deforestation {
+    background: var(--alert-orange);
 }
 
 .sensor-name {
@@ -709,8 +724,18 @@ body {
 
 .severity-summary .tag-high {
     background: rgba(224, 85, 85, 0.2);
-    color: var(--alert-red);
+    color: #ff7e7e;
     border: 1px solid rgba(224, 85, 85, 0.3);
+}
+
+.severity-summary .tag-mining {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffca28;
+}
+
+.severity-summary .tag-deforestation {
+    background: rgba(243, 156, 18, 0.2);
+    color: #fbbf24;
 }
 
 .severity-summary .tag-med {
@@ -980,4 +1005,90 @@ body {
 
 .leaflet-popup-tip {
     display: none !important;
+}
+
+/* ===== OBSERVATION DIAGNOSTICS ===== */
+.observation-list {
+    margin-top: 15px;
+    display: grid;
+    gap: 10px;
+}
+
+.observation-item {
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid var(--border-light);
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 15px;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.observation-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateX(5px);
+}
+
+.observation-bullet {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+    background: var(--muted-dim);
+}
+
+.observation-item.active .observation-bullet {
+    background: var(--alert-orange);
+    box-shadow: 0 0 8px var(--alert-orange);
+}
+
+.diagnosis-header {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--muted-dim);
+    margin-top: 20px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+/* Rich Media Improvements */
+.snapshot-media {
+    width: 100%;
+    height: 200px;
+    background: #111;
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border);
+}
+
+.snapshot-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+    transition: opacity 0.5s ease;
+}
+
+.snapshot-media:hover img {
+    opacity: 1;
+}
+
+.media-label {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--khaki);
+    backdrop-filter: blur(4px);
 }

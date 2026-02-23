@@ -3,7 +3,7 @@
 
 import './style.css';
 import { initMap, setMarkers, selectMarker, flyToRegion, toggleForestZones, toggleMarkers } from './src/map.js';
-import { fetchFIRMSData } from './src/firms.js';
+import { fetchV2Alerts, fetchV2Summary } from './src/api.js';
 import {
     showToast, openModal, closeModal, handleRealert,
     renderAlertList, updateInfoCard, updateStats, setupToolbar
@@ -11,6 +11,10 @@ import {
 
 let alerts = [];
 let selectedId = null;
+
+// Ensure selectedId is accessible to map.js
+window.selectedId = null;
+window.onAlertSelect = (id) => handleAlertSelect(id);
 
 // ===== BOOT =====
 async function boot() {
@@ -82,17 +86,13 @@ async function boot() {
 // ===== LOAD DATA =====
 async function loadData(dayRange = 1) {
     try {
-        const result = await fetchFIRMSData(dayRange);
+        const result = await fetchV2Alerts();
         alerts = result.alerts;
 
-        if (result.source === 'live') {
-            showToast(`✓ LIVE: ${alerts.length} hotspots loaded from NASA`);
-        } else if (result.source === 'key_inactive') {
-            showToast('NASA key not yet active — usually takes 10-20 mins');
-        } else if (result.source === 'no_data') {
-            showToast('No active hotspots detected in India right now');
+        if (result.source === 'v2_engine') {
+            showToast(`✓ CANOPIX v2.0: ${alerts.length} multi-sensor threats identified`);
         } else {
-            showToast('Using demo data — check your NASA MAP_KEY');
+            showToast('⚠️ Detection Engine Offline — Using local fallback');
         }
 
         // Update everything
@@ -101,17 +101,19 @@ async function loadData(dayRange = 1) {
 
         if (alerts.length > 0) {
             selectedId = alerts[0].id;
+            window.selectedId = selectedId;
             handleAlertSelect(selectedId);
         }
     } catch (error) {
         console.error('Failed to load data:', error);
-        showToast('Error loading data — displaying demo alerts');
+        showToast('Error connecting to Detection Engine');
     }
 }
 
 // ===== SELECTION =====
 function handleAlertSelect(id) {
     selectedId = id;
+    window.selectedId = id;
     const alert = alerts.find(a => a.id === id);
     if (!alert) return;
 

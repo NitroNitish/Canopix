@@ -179,17 +179,37 @@
                 </div>
                 <div class="sidebar-section">
                     <div class="section-label">ACTIVE SENSORS</div>
-                    <div class="sensor-row">
-                        <span class="sensor-dot active"></span>
-                        <span class="sensor-name">VIIRS S-NPP</span>
+                    <div class="sensor-list">
+                        <div class="sensor-row">
+                            <span class="sensor-dot active"></span>
+                            <span class="sensor-name">SENTINEL-2 (OPTICAL)</span>
+                        </div>
+                        <div class="sensor-row">
+                            <span class="sensor-dot active"></span>
+                            <span class="sensor-name">SENTINEL-1 (SAR)</span>
+                        </div>
+                        <div class="sensor-row">
+                            <span class="sensor-dot active"></span>
+                            <span class="sensor-name">VIIRS (THERMAL)</span>
+                        </div>
                     </div>
-                    <div class="sensor-row">
-                        <span class="sensor-dot active"></span>
-                        <span class="sensor-name">VIIRS NOAA-20</span>
-                    </div>
-                    <div class="sensor-row">
-                        <span class="sensor-dot"></span>
-                        <span class="sensor-name">MODIS Terra</span>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-label">THREAT LEGEND</div>
+                    <div class="legend-list">
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: var(--alert-red);"></span>
+                            <span>ACTIVE FIRE</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: var(--alert-orange);"></span>
+                            <span>DEFORESTATION</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: var(--alert-gold);"></span>
+                            <span>ILLEGAL MINING</span>
+                        </div>
                     </div>
                 </div>
             </aside>

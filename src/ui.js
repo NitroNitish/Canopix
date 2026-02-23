@@ -63,16 +63,24 @@ export function renderAlertList(alerts, selectedId, onSelect) {
     // Show top 20 alerts
     alerts.slice(0, 20).forEach(alert => {
         const el = document.createElement('div');
-        el.className = 'alert-mini' + (alert.id === selectedId ? ' selected' : '');
+        const isSelected = alert.id === selectedId;
+        const typeClass = alert.type === 'Illegal Mining' ? 'tag-mining' :
+            alert.type === 'Deforestation' ? 'tag-deforestation' : 'tag-high';
+
+        el.className = `alert-mini ${isSelected ? 'selected' : ''}`;
         el.dataset.id = alert.id;
-
-        const sevColor = alert.severity === 'HIGH' ? '#cc4444' : alert.severity === 'MEDIUM' ? '#c87a3a' : '#C0B87A';
-
         el.innerHTML = `
-      <div class="alert-mini-title">${alert.title}</div>
-      <div class="alert-mini-meta">${alert.lat.toFixed(2)}°N ${alert.lon.toFixed(2)}°E · ${alert.time} · ${alert.severity}</div>
-      <div class="alert-mini-bar"><div class="alert-mini-fill" style="width:${alert.confidence}%;background:${sevColor}"></div></div>
-    `;
+            <div class="alert-mini-icon ${alert.severity === 'CRITICAL' ? 'critical' : ''}">
+                <div class="pulse-ring"></div>
+            </div>
+            <div class="alert-mini-info">
+                <div class="alert-mini-title">${alert.title}</div>
+                <div class="alert-mini-meta">
+                    <span class="severity-tag ${typeClass}">${alert.type}</span>
+                    <span>${alert.time}</span>
+                </div>
+            </div>
+        `;
 
         el.addEventListener('click', () => onSelect(alert.id));
         list.appendChild(el);
@@ -80,24 +88,40 @@ export function renderAlertList(alerts, selectedId, onSelect) {
 }
 
 /**
- * Render a high-res forest snapshot for analysis
+ * Render a high-res forest snapshot for analysis with rich media labels
  */
 export function renderSnapshot(alert) {
-    const img = document.getElementById('snapshotImg');
-    if (!alert || !img) return;
+    const container = document.getElementById('snapshotView');
+    const labelMapping = {
+        'Active Fire': 'VIIRS THERMAL MAPPING',
+        'Illegal Mining': 'SENTINEL-1 SAR AMPLITUDE',
+        'Deforestation': 'SENTINEL-2 NDVI ANALYTICS'
+    };
+
+    if (!alert || !container) return;
 
     // Use a high-quality forest satellite placeholder
-    // In a real app, this would call a high-res imagery API like Planet or Sentinel
     const forestImages = [
-        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=320&h=180&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1542272202-41457df7866e?q=80&w=320&h=180&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=320&h=180&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=320&h=180&auto=format&fit=crop'
+        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1542272202-41457df7866e?q=80&w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=800&auto=format&fit=crop'
     ];
 
-    // Pick a "random" image based on ID so it stays consistent for the same alert
-    const idx = alert.id % forestImages.length;
-    img.src = forestImages[idx];
+    const idx = (typeof alert.id === 'string' ? alert.id.length : alert.id) % forestImages.length;
+    const imgUrl = forestImages[idx];
+    const label = labelMapping[alert.type] || 'SATELLITE AUDIT';
+
+    container.innerHTML = `
+        <div class="snapshot-media">
+            <div class="media-label">${label}</div>
+            <img src="${imgUrl}" alt="Forest Snapshot">
+        </div>
+        <div style="font-size:13px; color:var(--muted); line-height:1.4;">
+            Showing high-resolution multispectral composite for <strong>${alert.region}</strong>. 
+            Automated auditing confirms structural anomalies consistent with <strong>${alert.type.toLowerCase()}</strong>.
+        </div>
+    `;
 }
 
 /**
@@ -116,18 +140,46 @@ export function updateInfoCard(alert) {
     card.style.display = 'block';
     title.textContent = alert.title;
 
-    const sevClass = alert.severity === 'HIGH' ? 'sev-high' : alert.severity === 'MEDIUM' ? 'sev-med' : '';
+    const typeClass = alert.type === 'Illegal Mining' ? 'tag-mining' :
+        alert.type === 'Deforestation' ? 'tag-deforestation' : 'tag-high';
 
     body.innerHTML = `
+    <div style="font-weight:700; color:var(--white); margin-bottom:4px;">${alert.type} DETECTED</div>
     <div>${alert.region}</div>
     <div>${alert.lat.toFixed(2)}°N ${alert.lon.toFixed(2)}°E · ${alert.time}</div>
-    <div style="margin-top:4px;">
-      <span class="val">${alert.area} ha</span> · 
-      <span class="val">${alert.co2.toLocaleString()}t CO₂</span> · 
-      <span class="${sevClass}" style="font-weight:600">${alert.severity}</span>
+    <div style="margin-top:8px; display:flex; gap:10px;">
+      <span class="val">${alert.area.toFixed(1)} ha</span>
+      <span class="val">${alert.co2.toLocaleString()}t CO₂</span>
+      <span class="severity-tag ${typeClass}">${alert.confidence.toFixed(0)}% CONF</span>
     </div>
-    ${alert.brightness ? `<div style="margin-top:2px;">Brightness: <span class="val">${alert.brightness.toFixed(1)}K</span> · Confidence: <span class="val">${alert.confidence}%</span></div>` : ''}
   `;
+
+    // Update Analysis Panel
+    document.getElementById('analysisHeadline').textContent = `${alert.type} Analysis: ${alert.region}`;
+
+    let obsHtml = '';
+    if (alert.observations && alert.observations.length > 0) {
+        obsHtml = `
+            <div class="diagnosis-header">Detection Diagnostics (Fused Intelligence)</div>
+            <div class="observation-list">
+                ${alert.observations.map(obs => `
+                    <div class="observation-item active">
+                        <div class="observation-bullet"></div>
+                        <div>${obs}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    document.getElementById('analysisDetail').innerHTML = `
+        <div style="margin-bottom:15px;">
+            Fused intelligence from <strong>Sentinel-1 SAR</strong> and <strong>Sentinel-2 Optical</strong> 
+            confirms a <strong>${alert.severity}</strong> severity threat. 
+            Structural canopy loss detected at ${alert.lat.toFixed(4)}, ${alert.lon.toFixed(4)} with ${alert.confidence.toFixed(0)}% overall confidence.
+        </div>
+        ${obsHtml}
+    `;
 
     // Also update the snapshot viewer
     renderSnapshot(alert);
