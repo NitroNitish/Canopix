@@ -215,16 +215,19 @@ export function updateStats(alerts) {
     // Severity summary
     const sevSummary = document.getElementById('severitySummary');
     sevSummary.innerHTML = `
-    <span class="tag tag-high">HIGH ${highAlerts}</span>
-    <span class="tag tag-med">MED ${medAlerts}</span>
-    <span class="tag tag-low">LOW ${lowAlerts}</span>
+    <span class="tag tag-high">FIRE ${highAlerts}</span>
+    <span class="tag tag-deforestation">DEFORESTATION ${alerts.filter(a => a.type === 'Deforestation').length}</span>
+    <span class="tag tag-mining">MINING ${alerts.filter(a => a.type === 'Illegal Mining').length}</span>
   `;
 
-    // Analysis headline
-    document.getElementById('analysisHeadline').textContent =
-        `${totalAlerts} fire hotspots detected across India`;
-    document.getElementById('analysisDetail').textContent =
-        `${highAlerts} high-severity alerts requiring immediate attention. Est. ${totalArea.toLocaleString()} hectares affected with ~${totalCo2.toLocaleString()} tonnes CO₂ released. Data sourced from NASA VIIRS satellite instruments.`;
+    // Only update analysis if NO alert is selected
+    if (!window.selectedId) {
+        document.getElementById('analysisHeadline').textContent =
+            `${totalAlerts} multi-sensor threats detected across India`;
+        document.getElementById('analysisDetail').innerHTML =
+            `Currently monitoring ${totalArea.toLocaleString()} hectares. ${highAlerts} critical fire hotspots and 
+             ${alerts.filter(a => a.type !== 'Active Fire').length} structural anomalies detected via Sentinel-1/2 fusion.`;
+    }
 }
 
 /**
