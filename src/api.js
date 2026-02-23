@@ -3,7 +3,7 @@
  * Connects to the FastAPI backend for multi-sensor fused alerts
  */
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'https://canopix.onrender.com';
 
 export async function fetchV2Alerts() {
     try {
