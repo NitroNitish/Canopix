@@ -41,105 +41,101 @@ class Alert(BaseModel):
 def generate_mock_alerts():
     alerts = []
     
-    # 1. Deforestation Alert (Western Ghats Example)
-    def_alert = detect_deforestation(
-        delta_ndvi=-0.41,
-        delta_evi=-0.35,
-        sar_vh_change_db=-4.2,
-        sar_vv_change_db=-3.1,
-        persistence_windows=3,
-        area_ha=620.4,
-        in_protected_area=True
-    )
-    if def_alert:
-        alerts.append({
-            "type": "Feature",
-            "geometry": {"type": "Point", "coordinates": [77.14, 9.52]},
-            "properties": {
-                "alert_id": f"CAN-{datetime.now().strftime('%Y%m%d')}-WG-001",
-                "alert_type": def_alert["type"],
-                "severity": def_alert["severity"],
-                "confidence_score": def_alert["confidence"],
-                "centroid": {"lat": 9.52, "lon": 77.14},
-                "area_affected_ha": def_alert["area_ha"],
-                "detection_date": datetime.now().isoformat(),
-                "region": "Western Ghats, Kerala",
-                "protected_area": True,
-                "carbon_estimate_tonnes": 9800,
-                "observations": [
-                    "Vegetation Index (NDVI) dropped by 41% vs seasonal baseline",
-                    "Radar VH backscatter lost 4.2dB - structural canopy collapse",
-                    "Persistent anomaly confirmed across 3 satellite passes",
-                    "Located inside Periyar Tiger Reserve sanctuary boundary"
-                ]
-            }
-        })
+    # 1. Deforestation Alert (Western Ghats - Maharashtra/Kerala)
+    alerts.append({
+        "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [73.7, 17.9]},
+        "properties": {
+            "alert_id": f"CAN-{datetime.now().strftime('%Y%m%d')}-MH-001",
+            "alert_type": "Deforestation",
+            "severity": "High",
+            "confidence_score": 92.4,
+            "centroid": {"lat": 17.9, "lon": 73.7},
+            "area_affected_ha": 42.5,
+            "detection_date": datetime.now().isoformat(),
+            "region": "Western Ghats, Maharashtra",
+            "protected_area": True,
+            "carbon_estimate_tonnes": 5400,
+            "observations": [
+                "NDVI Anomaly: -0.42 drop in dense evergreen canopy",
+                "Sentinel-1 SAR Coherence Loss: -5.8dB (Structural Collapse)",
+                "Estimated Canopy Height Loss: 12m (GEDI-fused estimate)",
+                "Spatial cluster confirmed across 3 consecutive Sentinel tracks"
+            ]
+        }
+    })
 
-    # 2. Illegal Mining Alert (Central India Example)
-    min_alert = detect_mining(
-        bsi=0.22,
-        bsi_change=0.15,
-        has_water_adjacent=True,
-        has_dihedral_increase=True,
-        dist_to_road=450,
-        in_licensed_concession=False,
-        area_ha=12.5
-    )
-    if min_alert:
-        alerts.append({
-            "type": "Feature",
-            "geometry": {"type": "Point", "coordinates": [82.5, 21.2]},
-            "properties": {
-                "alert_id": f"CAN-{datetime.now().strftime('%Y%m%d')}-CI-002",
-                "alert_type": min_alert["type"],
-                "severity": min_alert["severity"],
-                "confidence_score": min_alert["confidence"],
-                "centroid": {"lat": 21.2, "lon": 82.5},
-                "area_affected_ha": min_alert["area_ha"],
-                "detection_date": datetime.now().isoformat(),
-                "region": "Central India, Chhattisgarh",
-                "protected_area": False,
-                "carbon_estimate_tonnes": 450,
-                "observations": [
-                    "Bare Soil Index (BSI) spike of +22% detected",
-                    "Spectral signatures matches fresh earth excavation",
-                    "New open water body (mining pond) detected in adjacent pixels",
-                    "Activity located 450m from arterial forest access road"
-                ]
-            }
-        })
+    # 2. Mountainous Illegal Mining (Rajasthan - Aravali Range)
+    alerts.append({
+        "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [76.2, 27.3]},
+        "properties": {
+            "alert_id": f"CAN-{datetime.now().strftime('%Y%m%d')}-RJ-002",
+            "alert_type": "Illegal Mining",
+            "severity": "Critical",
+            "confidence_score": 88.7,
+            "centroid": {"lat": 27.3, "lon": 76.2},
+            "area_affected_ha": 8.2,
+            "detection_date": datetime.now().isoformat(),
+            "region": "Aravallis, Rajasthan",
+            "protected_area": False,
+            "carbon_estimate_tonnes": 120,
+            "observations": [
+                "Bare Soil Index (BSI) Extreme Spike: +0.38 index value",
+                "Est. Excavation Volume: 45,000 m³ (Stereo-pair analysis)",
+                "Spectral Match: Open-pit granite/marble signature",
+                "Dihedral radar return increase: Vertical pit walls detected"
+            ]
+        }
+    })
 
-    # 3. Active Fire (Northeast India)
-    fire_alert = detect_fire(
-        viirs_conf="high",
-        frp=125.0,
-        persistence_passes=4,
-        spread_rate_ha_6h=650,
-        in_protected_area=True
-    )
-    if fire_alert:
-        alerts.append({
-            "type": "Feature",
-            "geometry": {"type": "Point", "coordinates": [93.5, 26.2]},
-            "properties": {
-                "alert_id": f"CAN-{datetime.now().strftime('%Y%m%d')}-NE-003",
-                "alert_type": fire_alert["type"],
-                "severity": fire_alert["severity"],
-                "confidence_score": fire_alert["confidence"],
-                "centroid": {"lat": 26.2, "lon": 93.5},
-                "area_affected_ha": 85.0,
-                "detection_date": datetime.now().isoformat(),
-                "region": "Northeast India, Assam",
-                "protected_area": True,
-                "carbon_estimate_tonnes": 1200,
-                "observations": [
-                    "Extreme thermal anomaly: 125MW Fire Radiative Power (FRP)",
-                    "High-magnitude VIIRS S-NPP detection (100% confidence)",
-                    "Fire spread rate calculated at 650 ha/6h (Rapid Expansion)",
-                    "Critical threat to Kaziranga fringe forest zones"
-                ]
-            }
-        })
+    # 3. Riverine Sand Mining (Jammu & Kashmir - Jhelum Basin)
+    alerts.append({
+        "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [74.8, 34.1]},
+        "properties": {
+            "alert_id": f"CAN-{datetime.now().strftime('%Y%m%d')}-JK-003",
+            "alert_type": "Illegal Mining",
+            "severity": "Medium",
+            "confidence_score": 81.2,
+            "centroid": {"lat": 34.1, "lon": 74.8},
+            "area_affected_ha": 3.5,
+            "detection_date": datetime.now().isoformat(),
+            "region": "Jhelum Basin, J&K",
+            "protected_area": False,
+            "carbon_estimate_tonnes": 0,
+            "observations": [
+                "Riverbed Geomorphology Change: High turbidity detected",
+                "Sentinel-2 Short Wave Infrared (SWIR): Fresh sand bar disturbance",
+                "Temporal Shift: Major river channel alteration detected in 10 days",
+                "Frequent heavy machinery heat signatures (VIIRS-fused)"
+            ]
+        }
+    })
+
+    # 4. Active Fire (Central India - Chhattisgarh)
+    alerts.append({
+        "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [82.5, 21.2]},
+        "properties": {
+            "alert_id": f"CAN-{datetime.now().strftime('%Y%m%d')}-CI-004",
+            "alert_type": "Active Fire",
+            "severity": "High",
+            "confidence_score": 99.0,
+            "centroid": {"lat": 21.2, "lon": 82.5},
+            "area_affected_ha": 120.0,
+            "detection_date": datetime.now().isoformat(),
+            "region": "Bastat, Chhattisgarh",
+            "protected_area": True,
+            "carbon_estimate_tonnes": 2100,
+            "observations": [
+                "FRP (Fire Radiative Power): 185MW (Extreme intensity)",
+                "VIIRS Confirmed: Thermal anomaly at 375m resolution",
+                "Spread Direction: Northeast (Est. 4.2 km/h)",
+                "CO Sensor Spike: Sentinel-5P carbon monoxide alert"
+            ]
+        }
+    })
 
     return alerts
 

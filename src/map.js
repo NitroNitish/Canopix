@@ -175,6 +175,12 @@ export function flyToRegion(regionId) {
         'mp': { center: [23.5, 78.5], zoom: 7 },
         'cg': { center: [21.5, 82.0], zoom: 7 },
         'andaman': { center: [12.0, 92.7], zoom: 8 },
+        'north': { center: [30.0, 78.0], zoom: 6 },
+        'jk': { center: [34.0, 75.0], zoom: 7 },
+        'up': { center: [27.0, 81.0], zoom: 7 },
+        'west': { center: [23.0, 74.0], zoom: 6 },
+        'rajasthan': { center: [26.5, 74.0], zoom: 7 },
+        'maharashtra': { center: [19.0, 76.0], zoom: 7 },
     };
 
     const target = regionCoords[regionId] || regionCoords['all'];
